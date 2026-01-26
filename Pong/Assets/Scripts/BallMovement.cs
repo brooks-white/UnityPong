@@ -4,22 +4,55 @@ using UnityEngine;
 
 public class BallMovement : MonoBehaviour
 {
-   public float speed = 3f;
+    // 🔒 Private fields (encapsulation)
+    private float speed = 5f;
+    private Vector2 direction = new Vector2(1f, 1f).normalized;
     private Rigidbody2D rb;
+
+    // ✅ Public properties (getters/setters)
+    public float Speed
+    {
+        get { return speed; }
+        set { speed = Mathf.Max(0, value); }
+    }
+
+    public Vector2 Direction
+    {
+        get { return direction; }
+        set { direction = value.normalized; }
+    }
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        rb.velocity = new Vector2(speed, speed);
+        rb.velocity = direction * speed;
     }
 
-    void OnCollisionEnter2D(Collision2D collision)
+    // ✅ Physics movement
+    void FixedUpdate()
     {
-        Vector2 velocity = rb.velocity;
+        rb.velocity = direction * speed;
+    }
 
-        // Reverse Y direction when hitting top or bottom walls
-        velocity.y = -velocity.y;
+    // ✅ Bounce off paddles and walls
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("Paddle"))
+        {
+            direction = new Vector2(-direction.x, direction.y).normalized;
+        }
 
-        rb.velocity = velocity;
+        if (collision.gameObject.CompareTag("Wall"))
+        {
+            direction = new Vector2(direction.x, -direction.y).normalized;
+        }
+    }
+
+    // ✅ Reset helper (used later for scoring)
+    public void ResetBall()
+    {
+        transform.position = Vector2.zero;
+        direction = new Vector2(1f, 1f).normalized;
+        rb.velocity = direction * speed;
     }
 }
