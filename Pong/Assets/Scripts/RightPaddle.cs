@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class RightPaddle : PaddleController
 {
-     protected override string GetInputAxis()
+    protected override float GetMovementInput()
     {
-        return "RightPaddle";
+        return Input.GetAxis("RightPaddle");
     }
 }
